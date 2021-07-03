@@ -4,6 +4,7 @@ import sqlite3
 
 class AuthorWindow:
     def __init__(self):
+        self.access = False
         self.window = Tk()
         self.window.title("Добро пожаловать!")
         self.window.geometry("800x600+300+200")
@@ -21,15 +22,20 @@ class AuthorWindow:
         self.button.pack()
         self.l_label = Label(self.window, text="", font=("Comic Sans MS", 23))
         self.l_label.pack()
+
     def button_click(self):
         if self.e_login.get()=='admin' :
             self.vhod()
         else:
             self.wrong()
+
     def vhod(self):
+        self.access = True
         self.window.destroy()
+
     def wrong(self):
         self.l_label.config(text="Неправильно!")
+
     def mainloop(self):
         self.window.mainloop()
 
@@ -67,7 +73,6 @@ class MainWindow:
         adding_window.mainloop()
         self.connect.commit()
 
-
 class WindowForAddingClient:
     def __init__(self,cursor):
         self.window = Tk()
@@ -78,7 +83,7 @@ class WindowForAddingClient:
         self.l_surname.pack()
         self.e_surname = Entry(self.window, font=("Comic Sans MS", 23))
         self.e_surname.pack()
-        self.l_name = Label(self.window, text="Фамилия", font=("Comic Sans MS", 23))
+        self.l_name = Label(self.window, text="Имя", font=("Comic Sans MS", 23))
         self.l_name.pack()
         self.e_name = Entry(self.window, font=("Comic Sans MS", 23))
         self.e_name.pack()
@@ -86,6 +91,8 @@ class WindowForAddingClient:
         self.l_phone.pack()
         self.e_phone = Entry(self.window, font=("Comic Sans MS", 23))
         self.e_phone.pack()
+        self.b_button = Button(self.window, text='Добавить', font=("Comic Sans MS", 23), command = self.add_client_click)
+        self.b_button.pack()
 
     def add_client_click(self):
         surname = self.e_surname.get()
