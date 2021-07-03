@@ -8,7 +8,7 @@ cursor = con.cursor()
 authorise_window = AuthorWindow()
 authorise_window.mainloop()
 
-main_window = MainWindow(cursor)
+main_window = MainWindow(con, cursor)
 main_window.mainloop()
 
 # cursor = con.cursor()

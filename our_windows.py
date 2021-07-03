@@ -6,7 +6,7 @@ class AuthorWindow:
     def __init__(self):
         self.window = Tk()
         self.window.title("Добро пожаловать!")
-        self.window.geometry("800x600+1800+200")
+        self.window.geometry("800x600+300+200")
         self.l_vhod = Label(self.window, text="Вход", font=("Comic Sans MS", 40))
         self.l_vhod.pack()
         self.l_login = Label(self.window, text="Логин", font=("Comic Sans MS", 23))
@@ -34,14 +34,16 @@ class AuthorWindow:
         self.window.mainloop()
 
 class MainWindow:
-    def __init__(self,cursor):
+    def __init__(self,connect,cursor):
+        self.connect = connect
         self.cursor = cursor
         self.window = Tk()
         self.window.title("Автосервис")
-        self.window.geometry("800x600+1800+200")
+        self.window.geometry("800x600+300+200")
         self.menu = Menu(self.window)
         self.clients = Menu(self.menu)
         self.clients.add_command(label = 'Показать', command = self.show_clients)
+        self.clients.add_command(label = 'Добавить', command = self.add_client)
         self.menu.add_cascade(label = 'Клиенты', menu=self.clients)
         self.window.config(menu=self.menu)
         self.frame = Frame(self.window)
@@ -59,3 +61,38 @@ class MainWindow:
                 l = Label(self.frame, text=cl[j])
                 l.grid(column=j, row=i)
         self.frame.pack()
+
+    def add_client(self):
+        adding_window = WindowForAddingClient(self.cursor)
+        adding_window.mainloop()
+        self.connect.commit()
+
+
+class WindowForAddingClient:
+    def __init__(self,cursor):
+        self.window = Tk()
+        self.cursor = cursor
+        self.window.title("Добро пожаловать!")
+        self.window.geometry("800x600+300+200")
+        self.l_surname = Label(self.window, text="Фамилия", font=("Comic Sans MS", 23))
+        self.l_surname.pack()
+        self.e_surname = Entry(self.window, font=("Comic Sans MS", 23))
+        self.e_surname.pack()
+        self.l_name = Label(self.window, text="Фамилия", font=("Comic Sans MS", 23))
+        self.l_name.pack()
+        self.e_name = Entry(self.window, font=("Comic Sans MS", 23))
+        self.e_name.pack()
+        self.l_phone = Label(self.window, text="Телефон", font=("Comic Sans MS", 23))
+        self.l_phone.pack()
+        self.e_phone = Entry(self.window, font=("Comic Sans MS", 23))
+        self.e_phone.pack()
+
+    def add_client_click(self):
+        surname = self.e_surname.get()
+        name = self.e_name.get()
+        phone = self.e_phone.get()
+        self.cursor.execute(f'INSERT INTO Client VALUES(null, \'{surname}\', \'{name}\', \'{phone}\')')
+        self.window.destroy()
+
+    def mainloop(self):
+        self.window.mainloop()
