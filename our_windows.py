@@ -72,13 +72,21 @@ class MainWindow(AbstractWindow):
         for i in range(len(clients)):
             b = Button(self.frame, text='Удалить',
                        command=lambda:(
-                           self.cursor.execute(f'DELETE FROM Client WHERE id={i};'),
+                           self.cursor.execute(f'DELETE FROM Client WHERE id={i+1};'),
                            self.connect.commit(),
                            self.show_clients()
                        )
                        )
             b.grid(row = i, column = 4)
-
+        for i in range(len(clients)):
+            b = Button(self.frame, text='Обновить',
+                       command=lambda: (
+                            WindowForUpdatingClient(self.cursor, i+1).mainloop(),
+                            self.connect.commit(),
+                            self.show_clients()
+                       )
+                       )
+            b.grid(row=i, column = 5)
         self.frame.pack()
 
     def add_client(self):
@@ -111,4 +119,34 @@ class WindowForAddingClient(AbstractWindow):
         name = self.e_name.get()
         phone = self.e_phone.get()
         self.cursor.execute(f'INSERT INTO Client VALUES(null, \'{surname}\', \'{name}\', \'{phone}\')')
+        self.window.destroy()
+
+class WindowForUpdatingClient(AbstractWindow):
+    def __init__(self, cursor, id_client):
+        super().__init__('обновите клиента')
+        self.id_client = id_client
+        self.cursor = cursor
+        self.l_surname = Label(self.window, text="Фамилия", font=("Comic Sans MS", 23))
+        self.l_surname.pack()
+        self.e_surname = Entry(self.window, font=("Comic Sans MS", 23))
+        self.e_surname.pack()
+        self.l_name = Label(self.window, text="Имя", font=("Comic Sans MS", 23))
+        self.l_name.pack()
+        self.e_name = Entry(self.window, font=("Comic Sans MS", 23))
+        self.e_name.pack()
+        self.l_phone = Label(self.window, text="Телефон", font=("Comic Sans MS", 23))
+        self.l_phone.pack()
+        self.e_phone = Entry(self.window, font=("Comic Sans MS", 23))
+        self.e_phone.pack()
+        self.b_button = Button(self.window, text='Обновить', font=("Comic Sans MS", 23), command=self.update_client_click)
+        self.b_button.pack()
+
+    def update_client_click(self):
+        surname = self.e_surname.get()
+        name = self.e_name.get()
+        phone = self.e_phone.get()
+        self.cursor.execute(f'UPDATE Client SET name = \'{name}\','+
+                            f' surname = \'{surname}\''+
+                            f' phone = \'{phone}\''+
+                            f' WHERE id = {self.id_client};')
         self.window.destroy()
