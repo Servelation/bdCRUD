@@ -60,6 +60,7 @@ class MainWindow(AbstractWindow):
         self.frame.pack()
 
     def show_clients(self):
+        self.connect.commit()
         self.frame.destroy()
         self.frame = Frame(self.window)
         self.cursor.execute('SELECT * FROM Client')
@@ -68,6 +69,16 @@ class MainWindow(AbstractWindow):
             for j in range(len(cl)):
                 l = Label(self.frame, text=cl[j])
                 l.grid(column=j, row=i)
+        for i in range(len(clients)):
+            b = Button(self.frame, text='Удалить',
+                       command=lambda:(
+                           self.cursor.execute(f'DELETE FROM Client WHERE id={i};'),
+                           self.connect.commit(),
+                           self.show_clients()
+                       )
+                       )
+            b.grid(row = i, column = 4)
+
         self.frame.pack()
 
     def add_client(self):
