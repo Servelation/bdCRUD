@@ -2,12 +2,20 @@ from tkinter import *
 import sqlite3
 
 
-class AuthorWindow:
-    def __init__(self):
-        self.access = False
+class AbstractWindow:
+    def __init__(self, title):
         self.window = Tk()
-        self.window.title("Добро пожаловать!")
+        self.window.title(title)
         self.window.geometry("800x600+300+200")
+
+    def mainloop(self):
+        self.window.mainloop()
+
+
+class AuthorWindow(AbstractWindow):
+    def __init__(self):
+        super().__init__('Добро пожаловать!')
+        self.access = False
         self.l_vhod = Label(self.window, text="Вход", font=("Comic Sans MS", 40))
         self.l_vhod.pack()
         self.l_login = Label(self.window, text="Логин", font=("Comic Sans MS", 23))
@@ -24,7 +32,7 @@ class AuthorWindow:
         self.l_label.pack()
 
     def button_click(self):
-        if self.e_login.get()=='admin' :
+        if self.e_login.get() == 'admin':
             self.vhod()
         else:
             self.wrong()
@@ -36,33 +44,27 @@ class AuthorWindow:
     def wrong(self):
         self.l_label.config(text="Неправильно!")
 
-    def mainloop(self):
-        self.window.mainloop()
 
-class MainWindow:
-    def __init__(self,connect,cursor):
+class MainWindow(AbstractWindow):
+    def __init__(self, connect, cursor):
+        super().__init__('Автосервис')
         self.connect = connect
         self.cursor = cursor
-        self.window = Tk()
-        self.window.title("Автосервис")
-        self.window.geometry("800x600+300+200")
         self.menu = Menu(self.window)
         self.clients = Menu(self.menu)
-        self.clients.add_command(label = 'Показать', command = self.show_clients)
-        self.clients.add_command(label = 'Добавить', command = self.add_client)
-        self.menu.add_cascade(label = 'Клиенты', menu=self.clients)
+        self.clients.add_command(label='Показать', command=self.show_clients)
+        self.clients.add_command(label='Добавить', command=self.add_client)
+        self.menu.add_cascade(label='Клиенты', menu=self.clients)
         self.window.config(menu=self.menu)
         self.frame = Frame(self.window)
         self.frame.pack()
-    def mainloop(self):
-        self.window.mainloop()
 
     def show_clients(self):
         self.frame.destroy()
         self.frame = Frame(self.window)
         self.cursor.execute('SELECT * FROM Client')
         clients = self.cursor.fetchall()
-        for i,cl in enumerate(clients):
+        for i, cl in enumerate(clients):
             for j in range(len(cl)):
                 l = Label(self.frame, text=cl[j])
                 l.grid(column=j, row=i)
@@ -73,12 +75,11 @@ class MainWindow:
         adding_window.mainloop()
         self.connect.commit()
 
-class WindowForAddingClient:
-    def __init__(self,cursor):
-        self.window = Tk()
+
+class WindowForAddingClient(AbstractWindow):
+    def __init__(self, cursor):
+        super().__init__('добавьте клиента')
         self.cursor = cursor
-        self.window.title("Добро пожаловать!")
-        self.window.geometry("800x600+300+200")
         self.l_surname = Label(self.window, text="Фамилия", font=("Comic Sans MS", 23))
         self.l_surname.pack()
         self.e_surname = Entry(self.window, font=("Comic Sans MS", 23))
@@ -91,7 +92,7 @@ class WindowForAddingClient:
         self.l_phone.pack()
         self.e_phone = Entry(self.window, font=("Comic Sans MS", 23))
         self.e_phone.pack()
-        self.b_button = Button(self.window, text='Добавить', font=("Comic Sans MS", 23), command = self.add_client_click)
+        self.b_button = Button(self.window, text='Добавить', font=("Comic Sans MS", 23), command=self.add_client_click)
         self.b_button.pack()
 
     def add_client_click(self):
@@ -100,6 +101,3 @@ class WindowForAddingClient:
         phone = self.e_phone.get()
         self.cursor.execute(f'INSERT INTO Client VALUES(null, \'{surname}\', \'{name}\', \'{phone}\')')
         self.window.destroy()
-
-    def mainloop(self):
-        self.window.mainloop()
